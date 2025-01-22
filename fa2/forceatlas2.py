@@ -203,7 +203,7 @@ class ForceAtlas2:
 
             # Gravitational forces
             gravity_timer.start()
-            fa2util.apply_gravity(nodes, self.gravity, scalingRatio=self.scalingRatio, useStrongGravity=self.strongGravityMode)
+            fa2util.apply_gravity(nodes, self.gravity, useStrongGravity=self.strongGravityMode)
             gravity_timer.stop()
 
             # If other forms of attraction were implemented they would be selected here.
@@ -233,19 +233,11 @@ class ForceAtlas2:
     #
     # This function returns a NetworkX layout, which is really just a
     # dictionary of node positions (2D X-Y tuples) indexed by the node name.
-    def forceatlas2_networkx_layout(self, G, pos=None, iterations=100, weight_attr=None):
+    def forceatlas2_networkx_layout(self, G, pos=None, iterations=100):
         import networkx
-        try:
-            import cynetworkx
-        except ImportError:
-            cynetworkx = None
-
-        assert (
-            isinstance(G, networkx.classes.graph.Graph)
-            or (cynetworkx and isinstance(G, cynetworkx.classes.graph.Graph))
-        ), "Not a networkx graph"
+        assert isinstance(G, networkx.classes.graph.Graph), "Not a networkx graph"
         assert isinstance(pos, dict) or (pos is None), "pos must be specified as a dictionary, as in networkx"
-        M = networkx.to_scipy_sparse_matrix(G, dtype='f', format='lil', weight=weight_attr)
+        M = networkx.to_scipy_sparse_array(G, dtype='f', format='lil')
         if pos is None:
             l = self.forceatlas2(M, pos=None, iterations=iterations)
         else:
